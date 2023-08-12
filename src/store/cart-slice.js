@@ -2,13 +2,18 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   items: [],
-  totalQuantity: 0, // 장바구니 총 항목 수
+  totalQuantity: 0,
+  changed: false,
 };
 
 const cartSlice = createSlice({
   name: "cart",
   initialState,
   reducers: {
+    replaceCart(state, action) {
+      state.totalQuantity = action.payload.totalQuantity;
+      state.items = action.payload.items;
+    },
     addCart(state, action) {
       const newItem = action.payload;
       // 기존 항목 배열에 존재했는지 파악 => 추후 없을때 받은 newItem을 추가해 주기위한 사전작업
@@ -27,6 +32,7 @@ const cartSlice = createSlice({
         existingItem.totalPrice = existingItem.totalPrice + newItem.price; // 추가된 항목가격만큼 총가격 증가
       }
       state.totalQuantity++; // 전체 수량은 존재여부관계없이 추가되면 늘어나야함
+      state.changed = true;
     },
     deleteCart(state, action) {
       const id = action.payload;
@@ -40,10 +46,7 @@ const cartSlice = createSlice({
         existingItem.totalPrice = existingItem.totalPrice - existingItem.price; // 총가격도 수정필요
       }
       state.totalQuantity--; // 전체수량 감소
-    },
-    replaceCart(state, action) {
-      state.totalQuantity = action.payload.totalQuantity;
-      state.items = action.payload.items;
+      state.changed = true;
     },
   },
 });
